@@ -4,7 +4,7 @@ const state = {
     computerScore: 0,
     scoreBox: document.getElementById("score-points")
   },
-  cardSprites : {
+  cardSprites: {
     avatar: document.getElementById("card-image"),
     name: document.getElementById("card-name"),
     type: document.getElementById("card-type")
@@ -63,13 +63,34 @@ async function createCardImage(IdCard, fieldSide) {
     cardImage.addEventListener("click", () => {
       setCardsField(cardImage.getAttribute("data-id"));
     });
+    cardImage.addEventListener("mouseover", () => {
+      drawSelectedCard(IdCard);
+    });
   }
-
-  cardImage.addEventListener("mouseover", () => {
-    drawSelectedCard(IdCard);
-  });
-
   return cardImage;
+}
+
+async function setCardsField(cardId) {
+  await removeAllCardsImages();
+
+  let computerCardId = await getRandomCardId();
+
+  state.fieldCards.player.style.display = "block";
+  state.fieldCards.computer.style.display = "block";
+
+  state.fieldCards.player.src = cardData[cardId].img;
+  state.fieldCards.computer.src = cardData[computerCardId].img;
+
+  let duelResults = await checkDuelResults(cardId, computerCardId);
+  
+  await updateScore();
+  await drawButton(duelResults);
+}
+
+async function drawSelectedCard(index) {
+  state.cardSprites.avatar.src = cardData[index].img;
+  state.cardSprites.name.innerText = cardData[index].name;
+  state.cardSprites.type.innerText = "Attribute: " + cardData[index].type;
 }
 
 async function drawCards(cardNumbers, fieldSide) {
